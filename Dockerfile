@@ -9,8 +9,5 @@ RUN yarn
 
 COPY . .
 
-RUN npx prisma generate
-RUN yarn migrate
-
 EXPOSE 5432
 

@@ -16,7 +16,6 @@ That flow relies on the following data to be available in the database:
 - product can have one category
 - category can have many products
 
-
 ## Docker commands
 
 Show running containers
@@ -39,3 +38,68 @@ Create container from docker-compose.yml file
 
 Build the container, checks for changes to Dockerfile too
 `docker-compose up --build -d`
+
+Destroy the volume(s)
+`docker volume prune`
+
+schema:
+
+// Can have 1 customer
+// Can have many order details
+model Order {
+  id           Int            @id @default(autoincrement())
+  createdAt    DateTime       @default(now())
+  customer     Customer       @relation(fields: [customerId], references: [id])
+  customerId   Int
+  orderDetails OrderDetails[]
+  invoice      Invoice?
+}
+
+// Can have 1 order
+// Can have many product
+model OrderDetails {
+  id       Int       @id @default(autoincrement())
+  products Product[]
+  order    Order     @relation(fields: [orderId], references: [id])
+  orderId  Int
+  price    Decimal
+  quantity Int
+}
+
+// Can have many order details
+// Can have 1 category
+model Product {
+  id           Int            @id @default(autoincrement())
+  name         String
+  description  String
+  price        Decimal
+  sku          Int
+  orderDetails OrderDetails[]
+  category     Category       @relation(fields: [categoryId], references: [id])
+  categoryId   Int
+}
+
+// Can have many products
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
+}
+
+// Can have many orders
+model Customer {
+  id      Int     @id @default(autoincrement())
+  email   String  @unique
+  address String
+  name    String
+  orders  Order[]
+}
+
+// Can have 1 order
+model Invoice {
+  id      Int   @id @default(autoincrement())
+  number  Int   @unique
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
+}
+
