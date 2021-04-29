@@ -1,7 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-// Instantiate the prisma client
-const prisma  = new PrismaClient();
+import prisma from '../src/client';
 
 /**
  * A seed function to insert data into the database for running test against.
@@ -24,7 +21,7 @@ async function seed() {
         ]
     })
 
-    console.log('📦 2 product categories successfully created!')
+    console.log('✨ 2 product categories successfully created!')
 
     // create products
     await prisma.product.createMany({
@@ -52,12 +49,12 @@ async function seed() {
     await prisma.customer.create({
         data: {
             name: 'Harry',
-            email: 'hello@hogwarts.io',
+            email: 'harry@hogwarts.io',
             address: '4 Privet Drive',
         }
     })
 
-    console.log('🧙 1 customer successfully created!')
+    console.log('✨ 1 customer successfully created!')
 }
 
 // Seed the database then disconnect

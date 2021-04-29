@@ -12,7 +12,7 @@ CREATE TABLE "OrderDetails" (
     "id" SERIAL NOT NULL,
     "productId" INTEGER NOT NULL,
     "orderId" INTEGER NOT NULL,
-    "price" DECIMAL(65,30) NOT NULL,
+    "total" DECIMAL(65,30) NOT NULL,
     "quantity" INTEGER NOT NULL,
 
     PRIMARY KEY ("id")
