@@ -51,7 +51,7 @@ CREATE TABLE "Customer" (
 -- CreateTable
 CREATE TABLE "Invoice" (
     "id" SERIAL NOT NULL,
-    "number" INTEGER NOT NULL,
+    "number" SERIAL NOT NULL,
     "orderId" INTEGER NOT NULL,
 
     PRIMARY KEY ("id")
@@ -59,9 +59,6 @@ CREATE TABLE "Invoice" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Customer.email_unique" ON "Customer"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Invoice.number_unique" ON "Invoice"("number");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Invoice_orderId_unique" ON "Invoice"("orderId");

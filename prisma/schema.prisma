@@ -65,7 +65,7 @@ model Customer {
 // Can have 1 order
 model Invoice {
   id      Int   @id @default(autoincrement())
-  number  Int   @unique
+  number  Int   @default(autoincrement())
   order   Order @relation(fields: [orderId], references: [id])
   orderId Int
 }

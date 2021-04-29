@@ -1,1 +1,1 @@
-export { createOrderNewCustomer, Customer, OrderInput } from './create-order';
+export { createOrder, Customer, OrderInput } from "./create-order";
