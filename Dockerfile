@@ -8,6 +8,5 @@ COPY prisma ./prisma/
 RUN yarn
 
 COPY . .
-
-EXPOSE 5432
+RUN yarn migrate
 

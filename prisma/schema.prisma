@@ -22,14 +22,13 @@ model Order {
 }
 
 // Can have 1 order
-// Can have many product
+// Can have many products
 model OrderDetails {
   id        Int     @id @default(autoincrement())
-  product   Product @relation(fields: [productId], references: [id])
-  productId Int
+  products  Product[]
   order     Order   @relation(fields: [orderId], references: [id])
   orderId   Int
-  price     Decimal
+  total     Decimal
   quantity  Int
 }
 

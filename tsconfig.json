@@ -4,7 +4,8 @@
       "outDir": "dist",
       "strict": true,
       "lib": ["esnext", "dom"],
-      "esModuleInterop": true
+      "esModuleInterop": true,
+      "module": "commonjs"
     },
     "include": ["./src"],
     "exclude": ["node_modules"]

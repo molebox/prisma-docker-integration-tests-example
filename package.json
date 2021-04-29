@@ -5,11 +5,13 @@
   "author": "Rich Haines",
   "license": "MIT",
   "scripts": {
-    "test": "jest -i",
     "migrate": "npx prisma migrate dev --name init",
     "docker:build": "docker-compose build --no-cache",
     "docker:create": "docker-compose up -d",
-    "docker:down": "docker-compose down"
+    "docker:down": "docker compose down",
+    "seed": "node --loader ts-node/esm ./prisma/seed.ts",
+    "bootstrap": "yarn docker:create && yarn migrate && yarn seed",
+    "test": "yarn bootstrap && jest -i && yarn docker:down"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
