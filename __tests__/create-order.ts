@@ -46,7 +46,7 @@ it("should create 1 new customer with 1 order", async () => {
 });
 
 it("should create 1 order with an existing customer", async () => {
-  // The new customers details
+  // The existing customers email
   const customer: Customer = {
     email: "harry@hogwarts.io",
   };
