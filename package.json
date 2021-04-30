@@ -6,11 +6,10 @@
   "license": "MIT",
   "scripts": {
     "migrate": "npx prisma migrate dev --name init",
-    "docker:build": "docker-compose build --no-cache",
-    "docker:create": "docker-compose up -d",
+    "docker:up": "docker-compose up -d",
     "docker:down": "docker compose down",
     "seed": "node --loader ts-node/esm ./prisma/seed.ts",
-    "bootstrap": "yarn docker:create && yarn migrate && yarn seed",
+    "bootstrap": "yarn docker:up && yarn migrate && yarn seed",
     "pretty": "prettier --write **/*.ts",
     "test": "yarn bootstrap && jest -i && yarn docker:down"
   },
