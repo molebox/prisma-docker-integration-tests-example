@@ -5,7 +5,7 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-it("should create 1 new customer, 1 order and 1 invoice", async () => {
+it("should create 1 new customer with 1 order", async () => {
   // The new customers details
   const customer: Customer = {
     id: 2,
@@ -20,7 +20,7 @@ it("should create 1 new customer, 1 order and 1 invoice", async () => {
     quantity: 1,
   };
 
-  // Create the order, customer and invoice
+  // Create the order and customer
   await createOrder(order);
 
   // Check if the new customer was created by filtering on unique email field
@@ -43,4 +43,32 @@ it("should create 1 new customer, 1 order and 1 invoice", async () => {
   expect(newCustomer).toEqual(customer);
   // Expect the new order to have been created and contain the new customer
   expect(newOrder).toHaveProperty("customerId", 2);
+});
+
+it("should create 1 order with an existing customer", async () => {
+  // The new customers details
+  const customer: Customer = {
+    email: "harry@hogwarts.io",
+  };
+  // The new orders details
+  const order: OrderInput = {
+    customer,
+    productId: 1,
+    quantity: 1,
+  };
+
+  // Create the order and connect the existing customer
+  await createOrder(order);
+
+  // Check if the new order was created by filtering on unique email field of the customer
+  const newOrder = await prisma.order.findFirst({
+    where: {
+      customer: {
+        email: customer.email,
+      },
+    },
+  });
+
+  // Expect the new order to have been created and contain the existing customer with an id of 1 (Harry Potter from the seed script)
+  expect(newOrder).toHaveProperty("customerId", 1);
 });

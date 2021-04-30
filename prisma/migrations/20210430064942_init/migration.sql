@@ -42,8 +42,8 @@ CREATE TABLE "Category" (
 CREATE TABLE "Customer" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "address" TEXT,
+    "name" TEXT,
 
     PRIMARY KEY ("id")
 );

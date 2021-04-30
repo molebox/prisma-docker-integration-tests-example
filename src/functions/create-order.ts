@@ -2,9 +2,9 @@ import prisma from "../client";
 
 export interface Customer {
   id?: number;
-  name: string;
+  name?: string;
   email: string;
-  address: string;
+  address?: string;
 }
 
 export interface OrderInput {
@@ -14,7 +14,7 @@ export interface OrderInput {
 }
 
 /**
- * Creates an order with a new customer.
+ * Creates an order with customer.
  * @param input The order parameters
  */
 export async function createOrder(input: OrderInput) {
@@ -31,6 +31,7 @@ export async function createOrder(input: OrderInput) {
   // If the product is null its out of stock, return null.
   if (!product) return;
 
+  // If the customer is new then create the record, otherwise connect via their unique email
   await prisma.order.create({
     data: {
       customer: {
