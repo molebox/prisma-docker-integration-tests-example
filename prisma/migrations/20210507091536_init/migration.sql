@@ -48,20 +48,8 @@ CREATE TABLE "Customer" (
     PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "Invoice" (
-    "id" SERIAL NOT NULL,
-    "number" SERIAL NOT NULL,
-    "orderId" INTEGER NOT NULL,
-
-    PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Customer.email_unique" ON "Customer"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Invoice_orderId_unique" ON "Invoice"("orderId");
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -74,6 +62,3 @@ ALTER TABLE "OrderDetails" ADD FOREIGN KEY ("orderId") REFERENCES "Order"("id") 
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Invoice" ADD FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
