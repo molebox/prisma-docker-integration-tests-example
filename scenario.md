@@ -34,3 +34,20 @@ Build the container, checks for changes to Dockerfile too
 
 Destroy the volume(s)
 `docker volume prune`
+
+- manually before all: start database server
+- manually before all: run a migration
+- manually before all: kick off jest with --runInBand to prevent any parallelism of test suites (in CI user can take advantage of GH matrix - to get parallelism back there) this is just the -i flag, which you already do
+- jest before each: seed the db
+- jest test
+- jest after each: empty db tables
+- manually after all: shut down database server
+
+Running order:
+- yarn docker:up - creates container and db
+- yarn migrate - runs migration on db and creates tables according to schema
+- yarn test
+
+
+Use quotes inside the rawQuery - 
+https://github.com/prisma/prisma-client-js/issues/595

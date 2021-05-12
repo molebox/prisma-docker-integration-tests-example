@@ -1,7 +1,58 @@
 import prisma from "../src/client";
 import { createOrder, Customer, OrderInput } from "../src/functions/index";
 
+beforeAll(async () => {
+    // create product categories
+    await prisma.category.createMany({
+      data: [{ name: "Wand" }, { name: "Broomstick" }],
+    });
+  
+    console.log("✨ 2 categories successfully created!");
+  
+    // create products
+    await prisma.product.createMany({
+      data: [
+        {
+          name: 'Holly, 11", phoenix feather',
+          description: "Harry Potters wand",
+          price: 100,
+          sku: 1,
+          categoryId: 1,
+        },
+        {
+          name: "Nimbus 2000",
+          description: "Harry Potters broom",
+          price: 500,
+          sku: 2,
+          categoryId: 2,
+        },
+      ],
+    });
+  
+    console.log("✨ 2 products successfully created!");
+  
+    // create the customer
+    await prisma.customer.create({
+      data: {
+        name: "Harry Potter",
+        email: "harry@hogwarts.io",
+        address: "4 Privet Drive",
+      },
+    });
+  
+    console.log("✨ 1 customer successfully created!");
+});
+
 afterAll(async () => {
+  for (const {
+    tablename,
+  } of await prisma.$queryRaw`SELECT tablename FROM pg_tables WHERE schemaname='public'`) {
+    
+      if (tablename !== '_prisma_migrations') {
+        await prisma.$queryRaw(`TRUNCATE TABLE "public"."${tablename}" CASCADE;`);
+    }
+  }
+
   await prisma.$disconnect();
 });
 
@@ -43,6 +94,7 @@ it("should create 1 new customer with 1 order", async () => {
   expect(newCustomer).toEqual(customer);
   // Expect the new order to have been created and contain the new customer
   expect(newOrder).toHaveProperty("customerId", 2);
+
 });
 
 it("should create 1 order with an existing customer", async () => {
@@ -72,3 +124,21 @@ it("should create 1 order with an existing customer", async () => {
   // Expect the new order to have been created and contain the existing customer with an id of 1 (Harry Potter from the seed script)
   expect(newOrder).toHaveProperty("customerId", 1);
 });
+
+it("should show 'Out of stock' message if productId doesn't exit", async () => {
+  // The existing customers email
+  const customer: Customer = {
+    email: "harry@hogwarts.io",
+  };
+  // The new orders details
+  const order: OrderInput = {
+    customer,
+    productId: 3,
+    quantity: 1,
+  };
+
+  // The productId supplied doesnt exit so the function should return an "Out of stock" message
+  await expect(createOrder(order)).resolves.toEqual(new Error('Out of stock'));
+
+});
+
