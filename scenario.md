@@ -47,3 +47,7 @@ Running order:
 - yarn docker:up - creates container and db
 - yarn migrate - runs migration on db and creates tables according to schema
 - yarn test
+
+
+Use quotes inside the rawQuery - 
+https://github.com/prisma/prisma-client-js/issues/595

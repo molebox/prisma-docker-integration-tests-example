@@ -28,8 +28,8 @@ export async function createOrder(input: OrderInput) {
     },
   });
 
-  // If the product is null its out of stock, return null.
-  if (!product) return;
+  // If the product is null its out of stock, return error.
+  if (!product) return new Error('Out of stock');
 
   // If the customer is new then create the record, otherwise connect via their unique email
   await prisma.order.create({

@@ -56,7 +56,7 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-it("should create 1 new customer with 1 order", async (done) => {
+it("should create 1 new customer with 1 order", async () => {
   // The new customers details
   const customer: Customer = {
     id: 2,
@@ -95,10 +95,9 @@ it("should create 1 new customer with 1 order", async (done) => {
   // Expect the new order to have been created and contain the new customer
   expect(newOrder).toHaveProperty("customerId", 2);
 
-  done()
 });
 
-it("should create 1 order with an existing customer", async (done) => {
+it("should create 1 order with an existing customer", async () => {
   // The existing customers email
   const customer: Customer = {
     email: "harry@hogwarts.io",
@@ -124,7 +123,22 @@ it("should create 1 order with an existing customer", async (done) => {
 
   // Expect the new order to have been created and contain the existing customer with an id of 1 (Harry Potter from the seed script)
   expect(newOrder).toHaveProperty("customerId", 1);
+});
 
-  done()
+it("should show 'Out of stock' message if productId doesn't exit", async () => {
+  // The existing customers email
+  const customer: Customer = {
+    email: "harry@hogwarts.io",
+  };
+  // The new orders details
+  const order: OrderInput = {
+    customer,
+    productId: 3,
+    quantity: 1,
+  };
+
+  // The productId supplied doesnt exit so the function should return an "Out of stock" message
+  await expect(createOrder(order)).resolves.toEqual(new Error('Out of stock'));
+
 });
 
