@@ -14,6 +14,9 @@ That flow relies on the following data to be available in the database:
 Show running containers
 `docker ps`
 
+Show all containers
+`docker container ls -a`
+
 Show images
 `docker images`
 

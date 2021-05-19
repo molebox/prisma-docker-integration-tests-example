@@ -1,59 +1,84 @@
 import prisma from "../src/client";
 import { createOrder, Customer, OrderInput } from "../src/functions/index";
+import { PrismaPromise } from "@prisma/client";
 
 beforeAll(async () => {
-    // create product categories
-    await prisma.category.createMany({
-      data: [{ name: "Wand" }, { name: "Broomstick" }],
-    });
-  
-    console.log("✨ 2 categories successfully created!");
-  
-    // create products
-    await prisma.product.createMany({
-      data: [
-        {
-          name: 'Holly, 11", phoenix feather',
-          description: "Harry Potters wand",
-          price: 100,
-          sku: 1,
-          categoryId: 1,
-        },
-        {
-          name: "Nimbus 2000",
-          description: "Harry Potters broom",
-          price: 500,
-          sku: 2,
-          categoryId: 2,
-        },
-      ],
-    });
-  
-    console.log("✨ 2 products successfully created!");
-  
-    // create the customer
-    await prisma.customer.create({
-      data: {
-        name: "Harry Potter",
-        email: "harry@hogwarts.io",
-        address: "4 Privet Drive",
+  // create product categories
+  await prisma.category.createMany({
+    data: [{ name: "Wand" }, { name: "Broomstick" }],
+  });
+
+  console.log("✨ 2 categories successfully created!");
+
+  // create products
+  await prisma.product.createMany({
+    data: [
+      {
+        name: 'Holly, 11", phoenix feather',
+        description: "Harry Potters wand",
+        price: 100,
+        sku: 1,
+        categoryId: 1,
       },
-    });
-  
-    console.log("✨ 1 customer successfully created!");
+      {
+        name: "Nimbus 2000",
+        description: "Harry Potters broom",
+        price: 500,
+        sku: 2,
+        categoryId: 2,
+      },
+    ],
+  });
+
+  console.log("✨ 2 products successfully created!");
+
+  // create the customer
+  await prisma.customer.create({
+    data: {
+      name: "Harry Potter",
+      email: "harry@hogwarts.io",
+      address: "4 Privet Drive",
+    },
+  });
+
+  console.log("✨ 1 customer successfully created!");
 });
 
 afterAll(async () => {
-  for (const {
-    tablename,
-  } of await prisma.$queryRaw`SELECT tablename FROM pg_tables WHERE schemaname='public'`) {
-    
-      if (tablename !== '_prisma_migrations') {
-        await prisma.$queryRaw(`TRUNCATE TABLE "public"."${tablename}" CASCADE;`);
-    }
-  }
+  // for (const {
+  //   tablename,
+  // } of await prisma.$queryRaw`SELECT tablename FROM pg_tables WHERE schemaname='public'`) {
 
-  await prisma.$disconnect();
+  //     if (tablename !== '_prisma_migrations') {
+  //       await prisma.$queryRaw(`TRUNCATE TABLE "public"."${tablename}" CASCADE;`);
+  //   }
+  // }
+
+  const transactions = [];
+    transactions.push(prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`)
+
+    for (const { TABLE_NAME } of await prisma.$queryRaw`SELECT TABLE_NAME from information_schema.TABLES WHERE TABLE_SCHEMA = 'tests';`) {
+      if (TABLE_NAME !== "_prisma_migrations") {
+        try {
+          transactions.push(prisma.$queryRaw(
+            `TRUNCATE '${TABLE_NAME}';`
+          ));
+        } catch (error) {
+          console.log('TRUNCATE ERROR: ', error)
+        }
+      }
+    }
+
+    transactions.push(prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`);
+
+    try {
+      await prisma.$transaction(transactions);
+    } catch (error) {
+      console.log('RUN TRANSACTION ERROR: ', error)
+    }
+    await prisma.$disconnect();
+
+  // await prisma.$disconnect();
 });
 
 it("should create 1 new customer with 1 order", async () => {
@@ -82,7 +107,7 @@ it("should create 1 new customer with 1 order", async () => {
   });
 
   // Check if the new order was created by filtering on unique email field of the customer
-  const newOrder = await prisma.order.findFirst({
+  const newOrder = await prisma.customerOrder.findFirst({
     where: {
       customer: {
         email: customer.email,
@@ -94,7 +119,6 @@ it("should create 1 new customer with 1 order", async () => {
   expect(newCustomer).toEqual(customer);
   // Expect the new order to have been created and contain the new customer
   expect(newOrder).toHaveProperty("customerId", 2);
-
 });
 
 it("should create 1 order with an existing customer", async () => {
@@ -113,7 +137,7 @@ it("should create 1 order with an existing customer", async () => {
   await createOrder(order);
 
   // Check if the new order was created by filtering on unique email field of the customer
-  const newOrder = await prisma.order.findFirst({
+  const newOrder = await prisma.customerOrder.findFirst({
     where: {
       customer: {
         email: customer.email,
@@ -138,7 +162,5 @@ it("should show 'Out of stock' message if productId doesn't exit", async () => {
   };
 
   // The productId supplied doesnt exit so the function should return an "Out of stock" message
-  await expect(createOrder(order)).resolves.toEqual(new Error('Out of stock'));
-
+  await expect(createOrder(order)).resolves.toEqual(new Error("Out of stock"));
 });
-

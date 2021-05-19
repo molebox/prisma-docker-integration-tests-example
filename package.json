@@ -5,14 +5,17 @@
   "author": "Rich Haines",
   "license": "MIT",
   "scripts": {
-    "migrate": "npx prisma migrate dev --name init",
+    "migrate:mysql": "npx prisma migrate dev --name mysql-init --schema=./prisma/mysql/schema.prisma",
+    "migrate:postgres": "npx prisma migrate dev --name postgres-init --schema=./prisma/postgres/schema.prisma",
+    "migrate": "npx prisma migrate dev --name mysql-init",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker compose down",
     "seed": "node --loader ts-node/esm ./prisma/seed.ts",
     "bootstrap": "yarn docker:up && yarn migrate && yarn seed",
     "pretty": "prettier --write **/*.ts",
     "test1": "yarn bootstrap && jest -i && yarn docker:down",
-    "test": "yarn docker:up && yarn migrate && jest -i"
+    "test": "yarn docker:up && yarn migrate:mysql && jest -i",
+    "boop": "jest -i"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
