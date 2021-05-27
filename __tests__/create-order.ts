@@ -3,6 +3,7 @@ import { createOrder, Customer, OrderInput } from "../src/functions/index";
 import { PrismaPromise } from "@prisma/client";
 
 beforeAll(async () => {
+  console.log(process.env.DATABASE_URL)
   // create product categories
   await prisma.category.createMany({
     data: [{ name: "Wand" }, { name: "Broomstick" }],
@@ -54,29 +55,44 @@ afterAll(async () => {
   //   }
   // }
 
-  const transactions = [];
-    transactions.push(prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`)
+  // const transactions: PrismaPromise<any>[] = [];
+  //   transactions.push(prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`)
 
-    for (const { TABLE_NAME } of await prisma.$queryRaw`SELECT TABLE_NAME from information_schema.TABLES WHERE TABLE_SCHEMA = 'tests';`) {
-      if (TABLE_NAME !== "_prisma_migrations") {
-        try {
-          transactions.push(prisma.$queryRaw(
-            `TRUNCATE '${TABLE_NAME}';`
-          ));
-        } catch (error) {
-          console.log('TRUNCATE ERROR: ', error)
-        }
-      }
-    }
+  //   for (const { TABLE_NAME } of await prisma.$queryRaw`SELECT TABLE_NAME from information_schema.TABLES WHERE TABLE_SCHEMA = 'tests';`) {
+  //     if (TABLE_NAME !== "_prisma_migrations") {
+  //       try {
+  //         transactions.push(prisma.$executeRaw(
+  //           `TRUNCATE ${TABLE_NAME};`
+  //         ));
+  //       } catch (error) {
+  //         console.log({error})
+  //       }
+  //     }
+  //   }
 
-    transactions.push(prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`);
+  //   transactions.push(prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`);
 
-    try {
-      await prisma.$transaction(transactions);
-    } catch (error) {
-      console.log('RUN TRANSACTION ERROR: ', error)
-    }
-    await prisma.$disconnect();
+  //   try {
+  //     await prisma.$transaction(transactions);
+  //   } catch (error) {
+  //     console.log({error})
+  //   }
+
+  const deleteProduct = prisma.product.deleteMany();
+  const deleteCategory = prisma.category.deleteMany();
+  const deleteOrderDetails = prisma.orderDetails.deleteMany();
+  const deleteCustomerOrder = prisma.customerOrder.deleteMany();
+  const deleteCustomer = prisma.customer.deleteMany();
+
+  await prisma.$transaction([
+    deleteOrderDetails,
+    deleteProduct,
+    deleteCategory,
+    deleteCustomerOrder,
+    deleteCustomer
+  ])
+
+  await prisma.$disconnect();
 
   // await prisma.$disconnect();
 });

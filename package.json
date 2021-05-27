@@ -5,7 +5,7 @@
   "author": "Rich Haines",
   "license": "MIT",
   "scripts": {
-    "migrate:mysql": "npx prisma migrate dev --name mysql-init --schema=./prisma/mysql/schema.prisma",
+    "migrate:mysql": "dotenv -e .env.test -- npx prisma migrate dev --name mysql-init --schema=./prisma/mysql/schema.prisma",
     "migrate:postgres": "npx prisma migrate dev --name postgres-init --schema=./prisma/postgres/schema.prisma",
     "migrate": "npx prisma migrate dev --name mysql-init",
     "docker:up": "docker-compose up -d",
